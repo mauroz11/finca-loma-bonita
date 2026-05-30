@@ -56,6 +56,8 @@
 html {
     scroll-behavior: smooth;
     font-size: 16px;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 body {
@@ -63,12 +65,13 @@ body {
     background-color: var(--color-crema);
     color: var(--color-gris-texto);
     line-height: 1.6;
+    max-width: 100%;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
 }
 
 /* Prevent horizontal overflow on mobile from absolute elements/carousels */
-.hero-section, .gallery-section, .hospedaje-section {
+.hero-section, .gallery-section, .hospedaje-section, .contact-section {
     overflow: hidden;
 }
 
@@ -1452,6 +1455,8 @@ blockquote {
 .form-group input,
 .form-group select,
 .form-group textarea {
+    width: 100%;
+    max-width: 100%;
     background-color: var(--color-gris-suave);
     border: 2px solid transparent;
     padding: 12px 18px;
@@ -1460,6 +1465,7 @@ blockquote {
     color: var(--color-negro);
     font-weight: 600;
     transition: var(--transition-fast);
+    box-sizing: border-box;
 }
 
 .form-group input::placeholder,
@@ -1867,4 +1873,24 @@ blockquote {
     .form-group-row { grid-template-columns: 1fr; gap: 0; }
     .phone-number { font-size: 1.8rem; }
     .lightbox-content { max-width: 90%; }
+    
+    .booking-form-wrapper {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .direct-phone-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .phone-number {
+        font-size: 1.5rem;
+    }
+    .phone-icon-round {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+    }
 }
