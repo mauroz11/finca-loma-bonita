@@ -126,12 +126,17 @@ function initScrollSpy() {
 }
 
 /**
- * 4. GALLERY FILTER & LIGHTBOX
- * Handles categories filter tabs and a touch-responsive full-screen gallery lightbox
+ * 4. GALLERY FILTER & LIGHTBOX (CAROUSEL / SLIDER VERSION)
+ * Handles categories filter tabs, horizontal carousel slider controls, dots, and lightbox
  */
 function initGallery() {
     const filterButtons = document.querySelectorAll('.filter-btn');
     const galleryItems = document.querySelectorAll('.gallery-item');
+    const galleryCarousel = document.getElementById('gallery-carousel');
+    const galleryPrevBtn = document.getElementById('gallery-prev');
+    const galleryNextBtn = document.getElementById('gallery-next');
+    const galleryDots = document.getElementById('gallery-dots');
+    
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const lightboxCaption = document.getElementById('lightbox-caption');
@@ -139,12 +144,83 @@ function initGallery() {
     const lightboxPrev = document.getElementById('lightbox-prev');
     const lightboxNext = document.getElementById('lightbox-next');
 
-    if (!galleryItems.length) return;
+    if (!galleryItems.length || !galleryCarousel) return;
 
     let activeItems = Array.from(galleryItems); // Items currently visible under active filter
     let currentIndex = 0;
 
-    // A. FILTER LOGIC
+    // A. DOTS GENERATION & SYNCHRONIZATION
+    const renderDots = () => {
+        if (!galleryDots) return;
+        galleryDots.innerHTML = '';
+        
+        activeItems.forEach((_, idx) => {
+            const dot = document.createElement('span');
+            dot.className = 'dot-g' + (idx === 0 ? ' active' : '');
+            dot.setAttribute('data-index', idx);
+            dot.addEventListener('click', () => {
+                const targetItem = activeItems[idx];
+                if (targetItem) {
+                    galleryCarousel.scrollTo({
+                        left: targetItem.offsetLeft - 10,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+            galleryDots.appendChild(dot);
+        });
+    };
+
+    const updateActiveDot = () => {
+        if (!galleryDots || !activeItems.length) return;
+        
+        const scrollLeft = galleryCarousel.scrollLeft;
+        const containerCenter = scrollLeft + galleryCarousel.offsetWidth / 2;
+        let closestIndex = 0;
+        let minDistance = Infinity;
+
+        activeItems.forEach((item, idx) => {
+            const itemCenter = item.offsetLeft + item.offsetWidth / 2;
+            const distance = Math.abs(itemCenter - containerCenter);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestIndex = idx;
+            }
+        });
+
+        const dotsG = galleryDots.querySelectorAll('.dot-g');
+        dotsG.forEach((dot, idx) => {
+            if (idx === closestIndex) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+    };
+
+    // Listen to scroll to sync dots
+    galleryCarousel.addEventListener('scroll', updateActiveDot, { passive: true });
+
+    // B. CAROUSEL PREV/NEXT NAVIGATION
+    if (galleryPrevBtn && galleryNextBtn) {
+        const scrollAmount = 320; // average card width
+        
+        galleryPrevBtn.addEventListener('click', () => {
+            galleryCarousel.scrollBy({
+                left: -scrollAmount,
+                behavior: 'smooth'
+            });
+        });
+
+        galleryNextBtn.addEventListener('click', () => {
+            galleryCarousel.scrollBy({
+                left: scrollAmount,
+                behavior: 'smooth'
+            });
+        });
+    }
+
+    // C. FILTER LOGIC
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
             // Update active button styling
@@ -158,7 +234,7 @@ function initGallery() {
                 const category = item.getAttribute('data-category');
                 
                 if (filterValue === 'all' || category === filterValue) {
-                    // Show item with animation
+                    // Show item with display block and reset opacity/transform
                     item.style.display = 'block';
                     setTimeout(() => {
                         item.style.opacity = '1';
@@ -166,18 +242,25 @@ function initGallery() {
                     }, 50);
                     activeItems.push(item);
                 } else {
-                    // Hide item with animation
+                    // Hide item with display none
                     item.style.opacity = '0';
                     item.style.transform = 'scale(0.8)';
                     setTimeout(() => {
                         item.style.display = 'none';
-                    }, 300);
+                    }, 200);
                 }
             });
+
+            // Reset scroll position and regenerate dots
+            galleryCarousel.scrollTo({ left: 0, behavior: 'auto' });
+            setTimeout(() => {
+                renderDots();
+                updateActiveDot();
+            }, 250);
         });
     });
 
-    // B. LIGHTBOX OPEN
+    // D. LIGHTBOX OPEN
     galleryItems.forEach(item => {
         item.addEventListener('click', () => {
             const img = item.querySelector('img');
@@ -195,7 +278,7 @@ function initGallery() {
         });
     });
 
-    // C. LIGHTBOX UPDATE CONTENT
+    // E. LIGHTBOX UPDATE CONTENT
     const updateLightboxContent = () => {
         if (!activeItems[currentIndex] || !lightboxImg || !lightboxCaption) return;
 
@@ -216,7 +299,7 @@ function initGallery() {
         }
     };
 
-    // D. LIGHTBOX NAVIGATION
+    // F. LIGHTBOX NAVIGATION
     const showNext = () => {
         if (activeItems.length <= 1) return;
         currentIndex = (currentIndex + 1) % activeItems.length;
@@ -256,6 +339,9 @@ function initGallery() {
         if (e.key === 'ArrowRight') showNext();
         if (e.key === 'ArrowLeft') showPrev();
     });
+
+    // Initial render
+    renderDots();
 }
 
 /**
@@ -462,8 +548,8 @@ function initBookingForm() {
         // URL encode the message
         const encodedMessage = encodeURIComponent(waMessage);
         
-        // Target phone number: +573244971602
-        const whatsappNumber = '573244971602';
+        // Target phone number: +573102913182
+        const whatsappNumber = '573102913182';
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
         // Redirect to WhatsApp in a new tab
