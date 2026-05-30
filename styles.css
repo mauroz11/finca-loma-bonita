@@ -67,6 +67,11 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+/* Prevent horizontal overflow on mobile from absolute elements/carousels */
+.hero-section, .gallery-section, .hospedaje-section {
+    overflow: hidden;
+}
+
 img {
     max-width: 100%;
     height: auto;
@@ -895,11 +900,11 @@ blockquote {
 }
 
 .gallery-carousel-btn.prev {
-    left: -25px;
+    left: 15px;
 }
 
 .gallery-carousel-btn.next {
-    right: -25px;
+    right: 15px;
 }
 
 .gallery-carousel-dots {
@@ -1250,6 +1255,12 @@ blockquote {
     flex-direction: column;
     justify-content: space-between;
     min-height: 480px;
+    padding: 40px;
+}
+@media (max-width: 576px) {
+    .location-map-card {
+        padding: 24px;
+    }
 }
 
 .map-card-title {
@@ -1837,6 +1848,11 @@ blockquote {
     
     .footer-grid { grid-template-columns: 1fr; }
     .footer-bottom { flex-direction: column; text-align: center; }
+    
+    .about-pillars {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
 }
 
 @media (max-width: 576px) {
